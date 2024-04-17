@@ -10,7 +10,7 @@ from langchain.callbacks.manager import(
     CallbackManagerForChainRun,
 )
 from langchain.schema.runnable import Runnable, patch_config, RunnableParallel, RunnablePassthrough
-from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory import ConversationSummaryBufferMemory, ConversationTokenBufferMemory
 from typing import List, Any
 
 if "GOOGLE_API_KEY" not in os.environ:
@@ -18,45 +18,27 @@ if "GOOGLE_API_KEY" not in os.environ:
 
     # model
 while True:
-    model_gemini = ChatGoogleGenerativeAI(model='gemini-pro',convert_system_message_to_humen=True,temperature=0.7)
-    '''
-    memory = ConversationSummaryBufferMemory(
-        llm = model_gemini,
-        max_token_limit = 80,
-        memory_key = "chat_history",
-        return_messages = True,
-    )
-    '''
-    def load_memory(input):
-        print(input)
-        return memory.load_memory_variables({})["chat_history"]
-    
+    model_gemini = ChatGoogleGenerativeAI(model='gemini-pro',system_message_to_humen=False,temperature=0.7)
     # 'system', 'human', 'ai'
     prompt = ChatPromptTemplate.from_messages(
         [
-            ('system', "You are a helpfule assistant"),
-            MessagesPlaceholder(variable_name='chat_history'),
-            # ("human","{input_prompt}"),
+            ('system', "You are helpful assistant."),
+            MessagesPlaceholder(variable_name='message'),
         ]  
     )
     prompt_topic = ChatPromptTemplate.from_template(
         "tell me a history about {topic}"
     )
-    chain = prompt | prompt_topic | model_gemini # RunnablePassthrough.assign(chat_history=load_memory) | 
+    chain = prompt | prompt_topic | model_gemini 
     input_prompt = input("Question : ")
     if input_prompt.lower() == 'exit':
         break
+    memory = ConversationSummaryBufferMemory(llm=model_gemini,max_token_limit=10)
     response = chain.invoke(
-        {'chat_history' : [HumanMessage(input_prompt)],
+        {'message' : [HumanMessage(input_prompt)],
         'topic' : "history",
-        # 'question': input_prompt 
-        #'chat_history' : []
         }
     )
-    '''
-    memory.save_context(
-        {"input" : input_prompt},
-        {"output" : result.content}
-    )
-    '''
+    memory.save_context({"input":input_prompt},{"output":response.content})
+    # memory.load_memory_variables({})
     print(response.content)
