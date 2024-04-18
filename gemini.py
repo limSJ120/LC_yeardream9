@@ -20,7 +20,7 @@ class GeminiChatbot:
     def chat(self):
         while True:
             input_prompt = input("Question : ")
-            if input_prompt.lower() == 'exit' or 'quit':
+            if input_prompt.lower() == 'exit':
                 break
 
             response = self.chain.invoke({'message': [HumanMessage(input_prompt)], 'topic': "history"})
