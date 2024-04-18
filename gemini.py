@@ -1,13 +1,24 @@
 import os
-import retriever
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import SystemMessagePromptTemplate, ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import ConversationSummaryBufferMemory, ConversationTokenBufferMemory
 
+from loguru import logger
+from langchain.callbacks import FileCallbackHandler
+
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = "AIzaSyBZmUSREZIBRfJ7TlYPHtJLHqvxkUl09vc"
+
+logfile = "output.log"
+
+logger.add(logfile, colorize=True, enqueue=True)
+handler = FileCallbackHandler(logfile)
+
+
+
 
 class GeminiChatbot:
     def __init__(self, model, prompt, prompt_topic, chain, memory):
@@ -23,7 +34,8 @@ class GeminiChatbot:
             if input_prompt.lower() == 'exit':
                 break
 
-            response = self.chain.invoke({'message': [HumanMessage(input_prompt)], 'topic': "history"})
+            response = self.chain.invoke({'message': [HumanMessage(input_prompt)], 'topic': "history"}, {"callbacks":[handler]})
+            logger.info(response)
             self.memory.save_context({"input": input_prompt}, {"output": response.content})
             print(response.content)
     # chat save_context
