@@ -1,6 +1,7 @@
 import os
 from retriever import TextRetriever
 from gemini import GeminiChatbot
+from crawler import Crawler
 import csv
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -20,8 +21,11 @@ from typing import List, Any
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = "AIzaSyDwBT66ilp92ifgIuQyVrPwe7JZRlAf-94"
 
+vectorlist = []
+crawler = Crawler()
 vectorDB = TextRetriever()
-vectorlist = vectorDB.load_documents_from_csv('./joseon.csv')
+for i in crawler.urllist('./joseon.csv'):
+    vectorlist.append(vectorDB.load_documents_from_csv(i))
 splits = vectorDB.split_documents(vectorlist)
 text_retriever = vectorDB.create_retriever(splits)
 gemini = GeminiChatbot()
@@ -40,6 +44,3 @@ while True:
             
         # chatbot = GeminiChatbot(llm, prompt, prompt_topic, chain, memory)
         # chatbot.chat(user)
-
-if __name__ == '__main__':
-    main()

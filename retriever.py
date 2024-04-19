@@ -14,11 +14,10 @@ class TextRetriever:
             os.environ["GOOGLE_API_KEY"] = "AIzaSyDwBT66ilp92ifgIuQyVrPwe7JZRlAf-94"
 
     # csv 파일 가져오기    
-    def load_documents_from_csv(self, url, vectorlist):
+    def load_documents_from_csv(self, url):
         loader = WebBaseLoader(url)
         text = loader.load()
-        vectorlist.append(text[0])
-        return vectorlist
+        return text[0]
     
     # 1000글자씩 자르고 100 글자가 겹침
     def split_documents(self, vectorlist):
