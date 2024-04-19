@@ -9,6 +9,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
 class TextRetriever:
+    def __init__(self):
+        if "GOOGLE_API_KEY" not in os.environ:
+            os.environ["GOOGLE_API_KEY"] = "AIzaSyDwBT66ilp92ifgIuQyVrPwe7JZRlAf-94"
 
     # csv 파일 가져오기    
     def load_documents_from_csv(self, url, vectorlist):
@@ -19,8 +22,7 @@ class TextRetriever:
     
     # 1000글자씩 자르고 100 글자가 겹침
     def split_documents(self, vectorlist):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, 
-                                                        length_function=len, is_separator_regex=False,)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         splits = text_splitter.split_documents(vectorlist)
         return splits
     
@@ -45,4 +47,3 @@ if __name__ == "__main__":
     input_prompt = input("User: ")
     response = retriever.search(input_prompt, text_retriever)
     print(response)
-
