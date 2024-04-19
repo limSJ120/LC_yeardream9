@@ -40,5 +40,6 @@ while True:
             
         # chatbot = GeminiChatbot(llm, prompt, prompt_topic, chain, memory)
         # chatbot.chat(user)
+
 if __name__ == '__main__':
     main()
