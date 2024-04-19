@@ -26,7 +26,8 @@ class TextRetriever:
     
     # 1000글자씩 자르고 100 글자가 겹침
     def split_documents(self, vectorlist):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100, 
+                                                        length_function=len, is_separator_regex=False,)
         splits = text_splitter.split_documents(vectorlist)
         return splits
     
