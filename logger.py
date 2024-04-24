@@ -10,3 +10,4 @@ class Logger:
 
     def print_text(self, response):
         logger.info(response)
+        
